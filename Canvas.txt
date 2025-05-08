@@ -1,0 +1,40 @@
+
+CANVAS
+O <canvas> é uma tag HTML usada para desenhar gráficos por meio de scripts JavaScript.
+Com ele, você pode desenhar formas, criar animações, jogos, gráficos e muito mais.
+Por padrão, o canvas é um retângulo branco. Para desenhar dentro dele, é necessário usar JavaScript.
+
+---
+
+MÉTODOS DO CANVAS
+1. getContext("2d")
+let ctx = canvas.getContext("2d");
+- Esse método retorna o contexto de renderização do canvas.
+- "2d" significa que você quer trabalhar com desenhos em duas dimensões.
+- Com o ctx, você acessa os métodos de desenho, como linhas, formas, texto, imagens etc.
+
+2. fillStyle
+ctx.fillStyle = "#000000";
+- Define a cor que será usada para preencher formas.
+- Pode usar cores em hexadecimal, nomes de cores, rgba(), etc.
+- Exemplo: ctx.fillStyle = "red"; ou ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+
+3. fillRect(x, y, largura, altura)
+ctx.fillRect(0, 0, 50, 50);
+- Desenha um retângulo preenchido.
+- (x, y) definem a posição no canvas.
+- largura e altura definem o tamanho do retângulo.
+- A cor usada será a que estiver definida em ctx.fillStyle.
+
+4.rect(x, y, largura, altura)
+- Desenha um retângulo sem estar preenchido.
+- Acho que vai ser bom para fazer as colisoes do jogo.
+
+5. fill()
+- Preenche o TUDO que está no canvas, se estiver no final e sla
+
+6. clearRect(x, y, largura, altura)
+
+7. MoveTo
+8. LineTo
+9. Stroke
