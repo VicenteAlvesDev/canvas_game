@@ -1,40 +1,94 @@
-
 CANVAS
-O <canvas> é uma tag HTML usada para desenhar gráficos por meio de scripts JavaScript.
-Com ele, você pode desenhar formas, criar animações, jogos, gráficos e muito mais.
-Por padrão, o canvas é um retângulo branco. Para desenhar dentro dele, é necessário usar JavaScript.
+<canvas> é uma tag HTML usada para desenhar gráficos com JavaScript.
+Com ela, dá pra criar jogos, animações, formas, gráficos e muito mais.
+Por padrão, é só um retângulo branco — pra usar, precisa acessar via JS.
 
 ---
 
 MÉTODOS DO CANVAS
+
 1. getContext("2d")
 let ctx = canvas.getContext("2d");
-- Esse método retorna o contexto de renderização do canvas.
-- "2d" significa que você quer trabalhar com desenhos em duas dimensões.
-- Com o ctx, você acessa os métodos de desenho, como linhas, formas, texto, imagens etc.
+- Ativa o modo de desenho em 2D.
+- Retorna o contexto (ctx), que permite desenhar formas, textos, imagens etc.
 
 2. fillStyle
 ctx.fillStyle = "#000000";
-- Define a cor que será usada para preencher formas.
-- Pode usar cores em hexadecimal, nomes de cores, rgba(), etc.
-- Exemplo: ctx.fillStyle = "red"; ou ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+- Define a cor usada pra preencher formas.
+- Pode ser "red", "#fff", "rgba(0,0,0,0.5)", etc.
 
 3. fillRect(x, y, largura, altura)
 ctx.fillRect(0, 0, 50, 50);
-- Desenha um retângulo preenchido.
-- (x, y) definem a posição no canvas.
-- largura e altura definem o tamanho do retângulo.
-- A cor usada será a que estiver definida em ctx.fillStyle.
+- Desenha um retângulo preenchido na tela.
+- Usa a cor definida em fillStyle.
 
-4.rect(x, y, largura, altura)
-- Desenha um retângulo sem estar preenchido.
-- Acho que vai ser bom para fazer as colisoes do jogo.
+4. rect(x, y, largura, altura)
+- Desenha um retângulo sem preencher.
+- Bom pra fazer limites ou colisões.
 
 5. fill()
-- Preenche o TUDO que está no canvas, se estiver no final e sla
+- Preenche formas abertas (como retângulos desenhados com rect).
+- Só funciona se tiver um caminho ativo.
 
 6. clearRect(x, y, largura, altura)
+- Limpa uma área específica do canvas.
+- ctx.clearRect(0, 0, canvas.width, canvas.height) limpa tudo.
 
-7. MoveTo
-8. LineTo
-9. Stroke
+7. moveTo(x, y)
+- Move o "cursor" invisível de desenho até (x, y), sem desenhar.
+
+8. lineTo(x, y)
+- Cria uma linha até o ponto (x, y) a partir do ponto atual.
+
+9. stroke()
+- Desenha as linhas (contorno) com base nos comandos anteriores (ex: moveTo + lineTo).
+
+10. requestAnimationFrame(func)
+- Chama uma função repetidamente, sincronizada com o FPS da tela.
+- Ideal pra criar animações e jogos.
+
+11. lineWidth
+ctx.lineWidth = 4;
+- Define a espessura da linha usada no stroke.
+
+12. strokeStyle
+ctx.strokeStyle = "blue";
+- Define a cor da linha (stroke).
+
+13. arc
+14. beginPath
+
+5. arcTo
+
+---
+
+IMAGENS
+
+img.src=""
+drawImg
+
+32 / 32
+
+---
+
+LOG DE MUDANÇAS
+- Removido inimigo e sua tabela
+- Adicionado movimento ao player
+- Adicionada colisão com as paredes do canvas
+- Player reestruturado de array para objeto
+- Adicionado sistema de controles via teclado (keydown e keyup)
+- Adicionadas funções draw() e move() com atualização contínua da tela usando requestAnimationFrame
+- Criado objeto game para armazenar dimensões do canvas
+- Removido desenho estático com fillRect, agora feito dinamicamente a cada frame
+
+- Adicionado o coletavel(Lixo)
+-Adicionado sistema de aleatoriedade do coletavel
+- Adicionado o sistema de pontuação
+
+- Adicionado um titulo a pagina
+- Adicionado uma estilização sofisticada a página
+
+---
+
+RECURSO DE NPC (grátis)
+https://snoblin.itch.io/pixel-rpg-free-npc
