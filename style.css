@@ -34,13 +34,20 @@ main {
     background-color: #ffffff;
 }
 
+.tables {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+}
 
 h2 {
     font-size: 1.5rem;
     margin-top: 1rem;
 }
 
-#score {
+#score, #time {
     font-weight: bold;
     color: #2980b9;
 }
+

@@ -72,21 +72,12 @@ drawImg
 ---
 
 LOG DE MUDANÇAS
-- Removido inimigo e sua tabela
-- Adicionado movimento ao player
-- Adicionada colisão com as paredes do canvas
-- Player reestruturado de array para objeto
-- Adicionado sistema de controles via teclado (keydown e keyup)
-- Adicionadas funções draw() e move() com atualização contínua da tela usando requestAnimationFrame
-- Criado objeto game para armazenar dimensões do canvas
-- Removido desenho estático com fillRect, agora feito dinamicamente a cada frame
+- Adicionado sprite do player
+- Adicionado animação do jogador
 
-- Adicionado o coletavel(Lixo)
--Adicionado sistema de aleatoriedade do coletavel
-- Adicionado o sistema de pontuação
-
-- Adicionado um titulo a pagina
-- Adicionado uma estilização sofisticada a página
+- Adicionado o objeto lixeira no mapa
+- Adicionado um cronometro e um novo sistema para coleta do lixo
+- Adicionado um novo efeito no html
 
 ---
 
