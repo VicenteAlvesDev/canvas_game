@@ -71,15 +71,19 @@ drawImg
 
 ---
 
-LOG DE MUDANÇAS
-- Adicionado sprite do player
-- Adicionado animação do jogador
-
-- Adicionado o objeto lixeira no mapa
-- Adicionado um cronometro e um novo sistema para coleta do lixo
-- Adicionado um novo efeito no html
+LOG DE MUDANÇAS:
+- Corrigido bug da sprite tocando mesmo parada
+- Removido fundo da sprite do player (transparente)
+- Rework completo nas colisões (exceto coletável)
+- Adicionados caminhões como obstáculos
+- Novo sprite para os caminhos
+- Animação adicionada ao sprite do caminhão
+- Sprite do ponto de coleta (lixeira) adicionado
+- Sprite do coletável (lixo) adicionado
+- Suporte ao WASD adicionado
+- Mapa placeholder incluído no jogo
 
 ---
 
-RECURSO DE NPC (grátis)
-https://snoblin.itch.io/pixel-rpg-free-npc
+MUSÍCA:
+I'm a believer - Richard Salter (instrumental) (Jujutsu shenanigans Hakari domain)
