@@ -1,0 +1,15 @@
+
+Ecological Quest: Beta 1.4
+
+UPDATE LOG
+- Reformulado todo o codigo
+- Adicionado sistema que inpede que o lixo seja gerado fora da tela
+- Adicionado uma variação de cor dos carros
+- Bugs resolvidos
+
+💡 Ideias Extras (se quiser expandir):
+- Cada fase é um bairro novo: Beco da Garrafa, Avenida da Sacolinha, Travessa da Banana.
+- Power-ups engraçados: "Super Imã de Lixo", "Patins Turbo", "Relógio Congelante" (congela o tempo por 3s).
+
+Ao final de cada fase, aparece uma frase tipo:
+👉 "Boa, Lixeirinha! A cidade tá mais limpa que espelho de banheiro!"
