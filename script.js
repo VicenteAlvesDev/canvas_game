@@ -1,4 +1,7 @@
 
+// // --- MEMORY LEAK SOLVE ---
+// let moveAnimationFrame = null;
+
 // --- CANVAS E CONTEXTO ---
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
@@ -11,6 +14,8 @@ let timeCheck = 30;
 // --- ÁUDIO ---
 const music = new Audio("./music/I'm a believer - Richard Salter.mp3");
 music.loop = true;
+music.volume = 1;
+
 function pararMusica() {
     music.pause();
     music.currentTime = 0;
@@ -139,7 +144,86 @@ let carro2 = {
     spr_height: 87 * 1.5
 };
 
+// --- MENU ---
+let menu_spr = new Image();
+menu_spr.src = "assets/tdScreen/tree.png";
+
+let menu = {
+    x: 530,
+    y: 400,
+    width: 200,
+    height: 200
+}
+
+let menu2_spr = new Image();
+menu2_spr.src = "assets/tdScreen/tree.png";
+
+let menu2 = {
+    x: 50,
+    y: 400,
+    width: 200,
+    height: 200
+}
+
+let nuvem_spr = new Image();
+nuvem_spr.src = "assets/tdScreen/cloud.png";
+
+let nuvem = {
+    x: 150,
+    y: 70,
+    width: 200,
+    height: 200
+}
+
+let nuvem2_spr = new Image();
+nuvem2_spr.src = "assets/tdScreen/cloud.png";
+
+let nuvem2 = {
+    x: 400,
+    y: 70,
+    width: 200,
+    height: 200
+}
+
+let fogo_spr = new Image();
+fogo_spr.src = "assets/tdScreen/fireTree.png";
+
+let fogo = {
+    x: 530,
+    y: 400,
+    width: 200,
+    height: 200
+}
+
+let fogo2_spr = new Image();
+fogo2_spr.src = "assets/tdScreen/fireTree.png";
+
+let fogo2 = {
+    x: 50,
+    y: 400,
+    width: 200,
+    height: 200
+}
+
+let audioPlayed = false;
+let deathAudioPlayed = false;
+
 // --- FUNÇÕES ---
+
+// // --- PARAR TODOS OS LOOPS E TIMERS ---
+// function pararLoopsEanimacoes() {
+//     if (moveAnimationFrame) {
+//         cancelAnimationFrame(moveAnimationFrame);
+//         moveAnimationFrame = null;
+//     }
+
+//     if (timerInterval) {
+//         clearInterval(timerInterval);
+//         timerInterval = null;
+//     }
+
+//     pararAnimacoesCarros();
+// }
 
 // Controla animação dos carros (loop de frames)
 function iniciarAnimacoesCarros() {
@@ -189,7 +273,6 @@ function trocarCorCarro() {
         carroN_spr.src = carro2_spr;
     }
 
-
 }
 
 // Temporizador do jogo
@@ -220,11 +303,13 @@ function reiniciarJogo() {
     clearInterval(timerInterval);
     pararAnimacoesCarros();
     pararMusica();
+    // pararLoopsEanimacoes();
 
     player.x = 400;
     player.y = 470;
     player.with_trash = false;
     player.dead = false;
+    deathAudioPlayed = false;
 
     trash.x = Math.random() * (game.width - trash.width);
     trash.y = Math.random() * (game.height - trash.height);
@@ -272,23 +357,109 @@ function desenharMapa() {
 
 // Desenha tela inicial
 function desenharTelaStart() {
-    ctx.font = "30px Arial";
+    // ctx.font = "30px Arial";
+    // ctx.fillStyle = "black";
+    // ctx.textAlign = "center";
+    // ctx.fillText("Pressione Enter para começar", game.width / 2, game.height / 2);
+    const gradient = ctx.createLinearGradient(0, 0, 0, game.height);
+    gradient.addColorStop(0, "#89f7fe");
+    gradient.addColorStop(1, "#66a6ff");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, game.width, game.height);
+    
+    ctx.drawImage(
+        menu_spr,
+        menu.x,      // Posicao X
+        menu.y,      // Posicao Y
+        menu.width,
+        menu.height
+    );
+    ctx.drawImage(
+        menu2_spr,
+        menu2.x,      // Posicao X
+        menu2.y,      // Posicao Y
+        menu2.width,
+        menu2.height
+    );
+    ctx.drawImage(
+        nuvem_spr,
+        nuvem.x,
+        nuvem.y,
+        nuvem.width,
+        nuvem.height
+    );
+    ctx.drawImage(
+        nuvem2_spr,
+        nuvem2.x,
+        nuvem2.y,
+        nuvem2.width,
+        nuvem2.height
+    );
+    ctx.font = "30px 'Silkscreen'";
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.fillText("Pressione Enter para começar", game.width / 2, game.height / 2);
+    return;
 }
 
 // Desenha tela de fim de jogo
 function desenharTelaFim() {
-    ctx.font = "30px Arial";
-    ctx.fillStyle = "red";
-    ctx.textAlign = "center";
-    ctx.fillText("Fim de Jogo!", game.width / 2, game.height / 2 - 20);
+    // pararLoopsEanimacoes();
 
-    ctx.font = "20px Arial";
+    // ctx.font = "30px Arial";
+    // ctx.fillStyle = "red";
+    // ctx.textAlign = "center";
+    // ctx.fillText("Fim de Jogo!", game.width / 2, game.height / 2 - 20);
+
+    // ctx.font = "20px Arial";
+    // ctx.fillStyle = "black";
+    // ctx.fillText(`Pontuação: ${score}`, game.width / 2, game.height / 2 + 40);
+    // ctx.fillText("Pressione R para reiniciar", game.width / 2, game.height / 2 + 10);
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, game.height);
+    gradient.addColorStop(0, "#FF0000");   
+    gradient.addColorStop(0.5, "#FF8000"); 
+    gradient.addColorStop(1, "#552200");   
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, game.width, game.height);
+
+    
+    ctx.drawImage(
+        fogo_spr,
+        fogo.x,
+        fogo.y,
+        fogo.width,
+        fogo.height
+    );
+    ctx.drawImage(
+        fogo2_spr,
+        fogo2.x,
+        fogo2.y,
+        fogo2.width,
+        fogo2.height
+    );
+    ctx.drawImage(
+        nuvem_spr,
+        nuvem.x,
+        nuvem.y,
+        nuvem.width,
+        nuvem.height
+    );
+    ctx.drawImage(
+        nuvem2_spr,
+        nuvem2.x,
+        nuvem2.y,
+        nuvem2.width,
+        nuvem2.height
+    );
+    ctx.font = "30px 'Silkscreen'";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText("Fim de Jogo!", game.width / 2, game.height / 2 - 40);
     ctx.fillStyle = "black";
-    ctx.fillText(`Pontuação: ${score}`, game.width / 2, game.height / 2 + 40);
-    ctx.fillText("Pressione R para reiniciar", game.width / 2, game.height / 2 + 10);
+    ctx.font = "20px 'Silkscreen'";
+    ctx.fillText("Pontuação: " + score, game.width / 2, game.height / 2 + 20);
+    ctx.fillText("Pressione R para reiniciar", game.width / 2, game.height / 2 - 5);
 
     pararMusica();
 }
@@ -350,19 +521,26 @@ function draw() {
     // DESENHAR O MAPA
     desenharMapa();
 
-    // CHECA COLISÃO E REPOSICIONA O LIXO
+    // CHECA COLISÃO DO PLAYER COM O LIXO
     if (checarColisao(player, trash)) {
         player.with_trash = true;
 
          // APAGA O LIXO
         trash.x = -100;
         trash.y = -100;
+
+        //evita tocar infinitamente... 
+        if (!audioPlayed) {
+            const audio = new Audio('./music/collect.mp3');
+            audio.play();
+            audioPlayed = true;
+        }
     }
 
     // DESENHA O LIXO
     ctx.drawImage(trash_spr, trash.x, trash.y, trash.width, trash.height);
 
-    // CHECA COLISÃO E REPOSICIONA O LIXO
+    // CHECA COLISÃO DO PLAYER COM A LIXEIRA E REPOSICIONA O LIXO
     if (player.with_trash) {
         if (checarColisao(player, bin)) {
             player.with_trash = false;
@@ -380,8 +558,16 @@ function draw() {
             }
             time = timeCheck;
 
+            //evita tocar infinitamente... 
+            if (audioPlayed) {
+                const audio = new Audio('./music/collect2.wav');
+                audio.play();
+                audioPlayed = true;
+            }
+
             document.querySelector("#time").innerHTML = time;
             document.querySelector("#score").innerHTML = score;
+            audioPlayed = false;
         }
     }
     // DESENHA A LIXEIRA
@@ -424,25 +610,25 @@ function draw() {
     
     // === QUADRADOS DE COLISÃO ===
 
-    // PLAYER (vermelho)
-    ctx.strokeStyle = "red";
-    ctx.strokeRect(player.x, player.y, player.width, player.height);
+    // // PLAYER (vermelho)
+    // ctx.strokeStyle = "red";
+    // ctx.strokeRect(player.x, player.y, player.width, player.height);
 
-    // CARRO 1 (azul)
-    ctx.strokeStyle = "blue";
-    ctx.strokeRect(carro1.x, carro1.y, carro1.width, carro1.height);
+    // // CARRO 1 (azul)
+    // ctx.strokeStyle = "blue";
+    // ctx.strokeRect(carro1.x, carro1.y, carro1.width, carro1.height);
 
-    // CARRO 2 (green)
-    ctx.strokeStyle = "green";
-    ctx.strokeRect(carro2.x, carro2.y, carro2.width, carro2.height);
+    // // CARRO 2 (green)
+    // ctx.strokeStyle = "green";
+    // ctx.strokeRect(carro2.x, carro2.y, carro2.width, carro2.height);
 
-    // Contorno do LIXO
-    ctx.strokeStyle = "yellow";
-    ctx.strokeRect(trash.x, trash.y, trash.width, trash.height);
+    // // Contorno do LIXO
+    // ctx.strokeStyle = "yellow";
+    // ctx.strokeRect(trash.x, trash.y, trash.width, trash.height);
 
-    // Contorno da LIXEIRA
-    ctx.strokeStyle = "purple";
-    ctx.strokeRect(bin.x, bin.y, bin.width, bin.height);
+    // // Contorno da LIXEIRA
+    // ctx.strokeStyle = "purple";
+    // ctx.strokeRect(bin.x, bin.y, bin.width, bin.height);
 
     // ATUALIZA O DESENHO
     anim = requestAnimationFrame(draw);
@@ -518,19 +704,31 @@ function move() {
     // COLISÃO CARRO 1
     if (checarColisao(player, carro1)) {
         player.dead = true;
+        
+        if (!deathAudioPlayed) {
+            const audio = new Audio('./music/wrong.mp3'); // Mesmo som do lixo (ou troque o arquivo)
+            audio.play();
+            deathAudioPlayed = true;
+        }
     }
 
     // COLISÃO COM CARRO 2
     if (checarColisao(player, carro2)) {
         player.dead = true;
+
+        if (!deathAudioPlayed) {
+            const audio = new Audio('./music/wrong.mp3'); // Mesmo som do lixo (ou troque o arquivo)
+            audio.play();
+            deathAudioPlayed = true;
+        }
     }
 
      // mover carros
     moverCarro(carro1);
     moverCarro(carro2);
 
-    draw();                               
-    requestAnimationFrame(move);
+    draw();      
+    requestAnimationFrame(move);                         
 }
 
-requestAnimationFrame(move); 
+requestAnimationFrame(move);

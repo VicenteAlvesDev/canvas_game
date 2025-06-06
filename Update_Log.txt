@@ -1,11 +1,16 @@
 
-Ecological Quest: Beta 1.4
+Ecological Quest: V1.0
 
 UPDATE LOG
-- Reformulado todo o codigo
-- Adicionado sistema que inpede que o lixo seja gerado fora da tela
-- Adicionado uma variação de cor dos carros
-- Bugs resolvidos
+- Adicionada tela do menu inicial
+- Adicionada tela do menu final
+
+- Adicionados efeitos sonoros (SFX):
+    Coleta do lixo
+    Entrega do lixo
+    Morte
+
+
 
 💡 Ideias Extras (se quiser expandir):
 - Cada fase é um bairro novo: Beco da Garrafa, Avenida da Sacolinha, Travessa da Banana.
