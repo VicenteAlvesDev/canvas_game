@@ -1,0 +1,574 @@
+
+// Carrega recursos iniciais
+const canvas = document.querySelector("#canvas");
+const ctx = canvas.getContext("2d");
+
+let recycled = parseInt(document.querySelector("#trash").innerHTML);
+let difficultyLevel = parseInt(document.querySelector("#difficult").innerHTML);
+
+// Sons em geral
+let currentMusic = null; // Música tocando atualmente
+
+let startMusic = new Audio("../assets/sfx/music/music_start.mp3");
+startMusic.loop = true;
+
+let gameMusic = new Audio("../assets/sfx/music/music_game.mp3");
+gameMusic.loop = true;
+
+let endMusic = new Audio("../assets/sfx/music/music_end.wav");
+let sfxCollect = new Audio("../assets/sfx/snd_collect.wav");
+let sfxDiscart = new Audio("../assets/sfx/snd_deposite.wav");
+
+// Volume Músicas
+startMusic.volume = 0.3;
+gameMusic.volume = 0.45;
+endMusic.volume = 0.55;
+
+// Volume SFX
+sfxCollect.volume = 0.9;
+sfxDiscart.volume = 0.3;
+
+function playMusic(music) {
+    if (currentMusic !== music) {
+        if (currentMusic) {
+            currentMusic.pause();
+            currentMusic.currentTime = 0;
+        }
+        currentMusic = music;
+        currentMusic.play();
+    }
+}
+
+let game = {
+    width: 800,
+    height: 600,
+    state : "start"
+};
+
+// Teclas
+let keys = {}
+window.addEventListener("keydown", (event) => {
+    keys[event.key.toLowerCase()] = true;
+});
+
+window.addEventListener("keyup", (event) => {
+    keys[event.key.toLowerCase()] = false;
+});
+
+// Mapa 
+let tileSize = 85.71428571428571;
+
+let map = [
+  ["g2","g","g1","g","g2","g1","g1","g","g2","g1","g"], 
+  ["w","w","w","w","w","w","w","w","w","w","w"],
+  ["s","s","s","s","s","s","s","s","s","s","s"],
+  ["m","m","m","m","m","m","m","m","m","m","m"],
+  ["e","e","e","e","e","e","e","e","e","e","e"],
+  ["w","w","w","w","w","w","w","w","w","w","w"],
+  ["g","g1","g2","g2","g1","g","g2","g","g1","g1","g"]  
+];
+
+const tileImgs = {
+  g: new Image(),
+  g1: new Image(),
+  g2: new Image(),
+  w: new Image(),
+  s: new Image(),
+  m: new Image(),
+  e: new Image(),
+};
+
+tileImgs.g.src = "../assets/spr/background/spr_grass.png";
+tileImgs.g1.src = "../assets/spr/background/spr_grass1.png";
+tileImgs.g2.src = "../assets/spr/background/spr_grass2.png";
+tileImgs.w.src = "../assets/spr/background/spr_walkroad.png";
+tileImgs.s.src = "../assets/spr/background/spr_street_start.png";
+tileImgs.m.src = "../assets/spr/background/spr_street_mid.png";
+tileImgs.e.src = "../assets/spr/background/spr_street_end.png";
+
+function drawMap() {
+  for (let y = 0; y < map.length; y++) {
+    for (let x = 0; x < map[y].length; x++) {
+      let tileType = map[y][x];           
+      let tileImage = tileImgs[tileType];
+      ctx.drawImage(tileImage, x * tileSize, y * tileSize, tileSize, tileSize);
+    }
+  }
+}
+
+function collisionCheck(obj1, obj2) {
+    return obj1.x < obj2.x + obj2.width &&
+           obj1.x + obj1.width > obj2.x &&
+           obj1.y < obj2.y + obj2.height &&
+           obj1.y + obj1.height > obj2.y;
+}
+
+function collisionCheckBetter(obj1, obj2) {
+    return obj1.x + 10 < (obj2.x + 15) + obj2.width - 30 &&
+           (obj1.x + 10) + (obj1.width - 20) > obj2.x + 15 &&
+           obj1.y + 20 < (obj2.y + 30) + obj2.height - 70 &&
+           (obj1.y + 20) + (obj1.height - 20) > obj2.y + 30;
+}
+
+// Debug
+function drawHitbox(obj, color = "red") {
+    if (obj == carro1 || obj == carro2) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(obj.x + 15, obj.y + 30, obj.width - 30, obj.height - 70);
+    } else if (obj == player) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(obj.x + 10, obj.y + 20, obj.width - 20, obj.height - 20);
+    } else {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
+    }
+    
+}
+
+let player = {
+    x: 350,
+    y: 430,
+    //width: 50,
+    //height: 70,
+    width: 50,
+    height: 50,
+    speed: 4,
+    isMoving: false,
+    withTrash: false
+};
+
+let player_spr = new Image();
+player_spr.src = "../assets/spr/spr_player.png";
+
+let currentFrame = 0; // Quadro atual da animação
+let currentRow = 5;
+let spriteWidth = 1280 / 4; // Largura de um frame da spritesheet
+let spriteHeight = 2560 / 8; // Altura do frame 
+let animCounter = 0; // Tempo da Animação
+
+let trash = {
+    x: Math.random() * (game.width - 50),
+    y: Math.random() * (game.height - 50),
+    width: 50,
+    height: 50,
+}
+
+let trash_spr = new Image();
+trash_spr.src = "../assets/spr/spr_trash.png";
+
+let bin  = {
+    x: 40,
+    y: 420,
+    width: 80,
+    height: 80,
+}
+
+let bin_spr = new Image();
+bin_spr.src = "../assets/spr/spr_bin.png";
+
+let carro1 = {
+    x: -200,
+    y: 160,
+    width: 94 * 1.5, 
+    height: 87 * 1.5, 
+    speed: 3,
+};
+
+let carro_spr = new Image();
+carro_spr.src = "../assets/spr/spr_truck_white.png";
+
+let carro1_currentFrame = 0; // Quadro atual da animação
+let carro1_currentRow = 2;
+
+let carro2 = {
+    x: 800,
+    y: 290,
+    width: 94 * 1.5,
+    height: 87 * 1.5,
+    speed: 3,
+};
+
+let carro2_spr = new Image();
+carro2_spr.src = "../assets/spr/spr_truck_black.png";
+
+let carro2_currentFrame = 0; // Quadro atual da animação
+let carro2_currentRow = 1;
+
+let carro_spriteWidth = 376 / 4; // Largura de um frame da spritesheet
+let carro_spriteHeight = 348 / 4; // Altura do frame (supondo uma linha só)
+let animCounterCarro = 0; // Tempo da Animação
+
+// Tela de Start
+function start_loop() {
+
+    let gamepad = navigator.getGamepads()[0];
+    let _Start = keys["enter"] || (gamepad && gamepad.buttons[9].pressed);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Fundo com gradiente
+    let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, "#0a0a0a");
+    gradient.addColorStop(1, "#1a1a1a");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Título
+    ctx.fillStyle = "white";
+    ctx.font = "72px 'Pixelify Sans'";
+    ctx.textAlign = "center";
+    ctx.fillText("CANVAS GAME", canvas.width / 2, 200);
+
+    // Subtítulo
+    ctx.font = "24px 'Pixelify Sans'";
+    ctx.fillText("Reimagined", canvas.width / 2, 250);
+
+    // Texto
+    ctx.font = "16px 'Pixelify Sans'";
+    ctx.fillText("Pressione Enter ou Start para começar", 400, 440); // desenha no ponto 0,0 agora centralizado
+
+    // Começa o jogo se pressionar
+    if (_Start) {
+        game.state = "gameplay";
+    }
+}
+
+// Atualiza a lógica do jogo
+function canvas_update() {
+
+    // Outros
+    let gamepad = navigator.getGamepads()[0];
+    player.isMoving = false;
+
+    // Controles
+    let _Right = keys["arrowright"] || keys["d"] || (gamepad && (gamepad.axes[0] > 0.5 || gamepad.buttons[15].pressed));
+    let _Left = keys["arrowleft"] || keys["a"] || (gamepad && (gamepad.axes[0] < -0.5 || gamepad.buttons[14].pressed));
+    let _Down = keys["arrowdown"] || keys["s"] || (gamepad && (gamepad.axes[1] > 0.5 || gamepad.buttons[13].pressed));
+    let _Up = keys["arrowup"] || keys["w"] || (gamepad && (gamepad.axes[1] < -0.5 || gamepad.buttons[12].pressed));
+
+    playMusic(gameMusic);
+
+    // Movimentação do Player
+    if (_Right && _Up) {
+        player.x += player.speed;
+        player.y -= player.speed;
+        currentRow = 4;
+        player.isMoving = true;
+    }
+
+    else if (_Right && _Down) {
+        player.x += player.speed;
+        player.y += player.speed;
+        currentRow = 7;
+        player.isMoving = true;
+    }
+
+    else if (_Left && _Up) {
+        player.x -= player.speed;
+        player.y -= player.speed;
+        currentRow = 3;
+        player.isMoving = true;
+    }
+
+    else if (_Left && _Down) {
+        player.x -= player.speed;
+        player.y += player.speed;
+        currentRow = 6;
+        player.isMoving = true;
+    }
+
+    else if (_Right) {
+        player.x += player.speed;
+        currentRow = 1;
+        player.isMoving = true;
+    }
+
+    else if (_Left) {
+        player.x -= player.speed;
+        currentRow = 0;
+        player.isMoving = true;
+    }
+
+    else if (_Down) {
+        player.y += player.speed;
+        currentRow = 5;
+        player.isMoving = true;
+    }
+
+    else if (_Up) {
+        player.y -= player.speed;
+        currentRow = 2;
+        player.isMoving = true;
+    }
+
+    // Colisão limite do mapa
+    if (player.x < 0) { player.x = 0 };
+    if (player.y < 0) { player.y = 0 };
+    if (player.x + player.width > game.width) { player.x = game.width - player.width };
+    if (player.y + player.height > game.height) { player.y = game.height - player.height; }
+
+    if (collisionCheck(player, trash)) {
+        player.withTrash = true;
+        trash.x = 9999;
+        trash.y = 9999;
+        trash.width = 40 + Math.random() * 60;
+        trash.height = trash.width;
+
+        // SFX
+        sfxCollect.currentTime = 0;
+        sfxCollect.play();
+    }
+
+    if (collisionCheck(player, bin)) {
+        if (player.withTrash) {
+            player.withTrash = false;
+            trash.x = Math.random() * (game.width - 50);
+            trash.y = Math.random() * (game.height - 50);
+            recycled += 1;
+            document.querySelector("#trash").innerHTML = recycled;
+
+            //SFX
+            sfxDiscart.currentTime = 0;
+            sfxDiscart.play();
+        }
+    }
+
+    function trocarCorCarro(sprite) {
+        if (Math.random() < 0.5) {
+            sprite.src = "../assets/spr/spr_truck_white.png";
+        } else {
+            sprite.src = "../assets/spr/spr_truck_black.png";
+        }
+    }
+
+    // Movimento dos Carros
+    carro1.x += carro1.speed;
+    carro2.x -= carro2.speed;
+
+    if (carro1.x > canvas.width + 200) {
+        trocarCorCarro(carro_spr);
+        carro1.x = -200;
+    } 
+    
+    if (carro2.x < -200) {
+        trocarCorCarro(carro2_spr);
+        carro2.x = 800
+    }
+
+    // Colisão com os Carros
+    if (collisionCheckBetter(player, carro1)) {
+        game.state = "death";
+    }
+
+    if (collisionCheckBetter(player, carro2)) {
+        game.state = "death";
+    }
+
+    // Sistema de Dificuldade
+    let currentLevel = Math.floor(recycled / 5);
+
+    if (currentLevel > difficultyLevel) {
+        difficultyLevel = currentLevel;
+        document.querySelector("#difficult").innerHTML = difficultyLevel
+        carro1.speed += 1;
+        carro2.speed += 1;
+    }
+}
+
+// Desenha na tela
+function canvas_draw() {
+
+    // Limpa a Tela
+    ctx.clearRect(0, 0, game.width, game.height); 
+
+    // Desenha o Mapa
+    drawMap();
+
+    // Desenha o Lixo
+    ctx.drawImage(trash_spr, trash.x, trash.y, trash.width, trash.height);
+    
+    // Desenha a Lixeira
+    ctx.drawImage(bin_spr, bin.x, bin.y, bin.width, bin.height);
+
+    
+    // Desenha o Carro 1
+    ctx.drawImage(
+        carro_spr,
+        carro1_currentFrame * carro_spriteWidth,
+        carro1_currentRow * carro_spriteHeight,
+        carro_spriteWidth, 
+        carro_spriteHeight,
+        carro1.x, 
+        carro1.y,
+        carro1.width, 
+        carro1.height
+    );
+
+    // Desenha o Player
+    ctx.drawImage (
+        player_spr,
+        currentFrame * spriteWidth,            
+        currentRow * spriteHeight,
+        spriteWidth, 
+        spriteHeight,             
+        player.x, 
+        player.y,                    
+        player.width, 
+        player.height
+    );
+
+    // Animação
+    if (player.isMoving) {
+        animCounter++;
+
+        if (animCounter >= 10) {
+            animCounter = 0;
+            currentFrame++;
+            if (currentFrame > 3) {
+                currentFrame = 0;
+            }
+        }
+    } else {
+        currentFrame = 0;
+        animCounter = 0;
+    }
+
+    // Desenha o Carro 2
+    ctx.drawImage(
+        carro2_spr,
+        carro2_currentFrame * carro_spriteWidth,
+        carro2_currentRow * carro_spriteHeight,
+        carro_spriteWidth,
+        carro_spriteHeight,
+        carro2.x, 
+        carro2.y,
+        carro2.width, 
+        carro2.height
+    );
+
+    // Animação Carro
+    animCounterCarro++
+    if (animCounterCarro >= 10) {
+        animCounterCarro = 0
+        carro1_currentFrame++;
+        carro2_currentFrame++;
+        if (carro1_currentFrame > 3) {
+            carro1_currentFrame = 0;
+            carro2_currentFrame = 0;
+        }
+    }
+
+    // Debug
+    // drawHitbox(player, "lime");   // player verde
+    // drawHitbox(carro1, "red");    // carro 1 vermelho
+    // drawHitbox(carro2, "red");    // carro 2 vermelho
+    // drawHitbox(trash, "yellow");   
+    // drawHitbox(bin, "pink");   
+
+};
+
+function end_loop() {
+
+    let gamepad = navigator.getGamepads()[0];
+    let _Restart = keys["r"] || (gamepad && gamepad.buttons[0].pressed);
+    let _Return = keys["t"] || (gamepad && gamepad.buttons[1].pressed);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    playMusic(endMusic);
+
+    // Fundo com gradiente
+    let gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, "#aa1a1a");
+    gradient.addColorStop(1, "#6d1313");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Título
+    ctx.fillStyle = "white";
+    ctx.font = "72px 'Pixelify Sans'";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER", canvas.width / 2, 200);
+
+    // Subtítulo
+    ctx.font = "24px 'Pixelify Sans'";
+    ctx.fillText("Você não conseguiu reciclar tudo a tempo!", canvas.width / 2, 250);
+
+    // Texto
+    ctx.font = "16px 'Pixelify Sans'";
+    ctx.fillStyle = "white";
+    ctx.fillText("Pressione R ou ✕ para reiniciar", 400, 440);
+    ctx.fillText("Pressione T ou ◯ para retornar ao menu", 400, 460);
+
+    // Reinicia o jogo se pressionar Enter ou Start
+    if (_Restart) {
+        // Reseta variáveis do jogo
+        recycled = 0;
+        difficultyLevel = 0;
+        document.querySelector("#trash").innerHTML = recycled;
+        document.querySelector("#difficult").innerHTML = difficultyLevel
+
+        // Posiciona player e lixo
+        player.x = 350;
+        player.y = 430;
+        player.withTrash = false;
+
+        trash.x = Math.random() * (game.width - 50);
+        trash.y = Math.random() * (game.height - 50);
+
+        // Posiciona carros
+        carro1.x = -200;
+        carro2.x = 800;
+        carro1.speed = 3;
+        carro2.speed = 3;
+
+        currentRow = 5;
+
+        game.state = "gameplay";
+    }
+
+    if (_Return) {
+        // Reseta variáveis do jogo
+        recycled = 0;
+        difficultyLevel = 0;
+        document.querySelector("#trash").innerHTML = recycled;
+        document.querySelector("#difficult").innerHTML = difficultyLevel
+
+        // Posiciona player e lixo
+        player.x = 350;
+        player.y = 430;
+        player.withTrash = false;
+
+        trash.x = Math.random() * (game.width - 50);
+        trash.y = Math.random() * (game.height - 50);
+
+        // Posiciona carros
+        carro1.x = -200;
+        carro2.x = 800;
+        carro1.speed = 3;
+        carro2.speed = 3;
+
+        currentRow = 5;
+
+        game.state = "start";
+        playMusic(startMusic);
+    }
+}
+
+// Loop Principal
+function game_loop() {
+    if (game.state == "start") {
+        start_loop();
+    } else if (game.state == "gameplay") {
+        canvas_update();
+        canvas_draw();
+    } else if (game.state == "death") {
+        end_loop();
+    }
+    requestAnimationFrame(game_loop);
+}
+
+game_loop();

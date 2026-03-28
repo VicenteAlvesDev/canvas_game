@@ -1,20 +1,105 @@
 
-Ecological Quest: V1.0
 
-UPDATE LOG
-- Adicionada tela do menu inicial
-- Adicionada tela do menu final
+UPDATE LOG – Ecological Quest Reimagined 
+Versão: 2.0
 
-- Adicionados efeitos sonoros (SFX):
-    Coleta do lixo
-    Entrega do lixo
-    Morte
+[ SISTEMA GERAL ]
 
+- Reestruturação completa do loop do jogo
+- Antes: funções separadas (move + draw)
+- Agora: game_loop() com estados (start, gameplay, death)
+- Código mais organizado e escalável
 
+[ MAPA ]
 
-💡 Ideias Extras (se quiser expandir):
-- Cada fase é um bairro novo: Beco da Garrafa, Avenida da Sacolinha, Travessa da Banana.
-- Power-ups engraçados: "Super Imã de Lixo", "Patins Turbo", "Relógio Congelante" (congela o tempo por 3s).
+- Substituição de fillRect por sistema de tiles
+- Uso de matriz (map[][])
+- Adição de sprites para o cenário
+- Visual mais detalhado
 
-Ao final de cada fase, aparece uma frase tipo:
-👉 "Boa, Lixeirinha! A cidade tá mais limpa que espelho de banheiro!"
+[ ÁUDIO ]
+
+- Sistema de áudio reformulado
+- Separação de músicas:
+  * startMusic
+  * gameMusic
+  * endMusic
+
+- Adição de efeitos sonoros (SFX)
+- Preparado para controle de música atual
+
+[ CONTROLES ]
+
+- Sistema de input dinâmico (keys[event.key])
+- Suporte a controle (Gamepad API)
+- Mais flexível e expansível
+
+[ PLAYER ]
+
+- Movimento com diagonais
+- Animação melhorada com contador (animCounter)
+- Simplificação do sistema de sprite
+- Remoção de variáveis desnecessárias
+
+[ CARROS ]
+
+- Movimento mais fluido
+- Sistema de troca de cor melhorado
+- Animação baseada em contador
+- Velocidade aumenta com dificuldade
+
+[ COLISÃO ]
+
+- Mantido collisionCheck()
+- Adicionado collisionCheckBetter()
+- Hitboxes mais precisas
+- Melhor experiência de gameplay
+
+[ DEBUG ]
+
+- Nova função drawHitbox()
+- Visualização de colisões
+- Ajustes específicos por tipo de objeto
+
+[ GAMEPLAY ]
+
+- Tamanho do lixo aleatório
+- Sistema de progressão por pontuação
+- Dificuldade aumenta a cada 5 pontos
+
+[ TELAS ]
+
+- Nova tela inicial com gradiente e fonte estilizada
+- Nova tela de morte com opções:
+  * Reiniciar
+  * Voltar ao menu
+
+- Suporte a controle nas telas
+
+[ ESTADOS DO JOGO ]
+
+- Antes: start, game, end
+- Agora: start, gameplay, death
+- Mais organizado e semântico
+
+[ OTIMIZAÇÃO ]
+
+- Remoção de setInterval
+- Uso exclusivo de requestAnimationFrame
+- Código mais leve e eficiente
+
+[ ARQUITETURA ]
+
+- Separação de responsabilidades:
+  - canvas_update() → lógica
+  - canvas_draw() → render
+
+- Código mais modular
+
+[ RESUMO ]
+
+- Grande refatoração do projeto
+- Melhor organização
+- Melhor visual
+- Melhor jogabilidade
+- Base pronta para futuras melhorias
