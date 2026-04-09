@@ -42,6 +42,7 @@ function playMusic(music) {
 let game = {
     width: 800,
     height: 600,
+    gravity: 0.5,
     state : "start"
 };
 
@@ -131,12 +132,13 @@ function drawHitbox(obj, color = "red") {
 let player = {
     x: 350,
     y: 430,
-    //width: 50,
-    //height: 70,
+    z: 0,
+    vz: 0,
     width: 50,
     height: 50,
     speed: 4,
     isMoving: false,
+    isJumping: false,
     withTrash: false
 };
 
@@ -148,6 +150,16 @@ let currentRow = 5;
 let spriteWidth = 1280 / 4; // Largura de um frame da spritesheet
 let spriteHeight = 2560 / 8; // Altura do frame 
 let animCounter = 0; // Tempo da Animação
+
+let shadow = {
+    x: 350,
+    y: 430,
+    width: 50,
+    height: 20,
+};
+
+let shadow_spr = new Image();
+shadow_spr.src = "../assets/spr/spr_shadow.png";
 
 let trash = {
     x: Math.random() * (game.width - 50),
@@ -243,11 +255,12 @@ function canvas_update() {
     let gamepad = navigator.getGamepads()[0];
     player.isMoving = false;
 
-    // Controles
+    // Teclas
     let _Right = keys["arrowright"] || keys["d"] || (gamepad && (gamepad.axes[0] > 0.5 || gamepad.buttons[15].pressed));
     let _Left = keys["arrowleft"] || keys["a"] || (gamepad && (gamepad.axes[0] < -0.5 || gamepad.buttons[14].pressed));
     let _Down = keys["arrowdown"] || keys["s"] || (gamepad && (gamepad.axes[1] > 0.5 || gamepad.buttons[13].pressed));
     let _Up = keys["arrowup"] || keys["w"] || (gamepad && (gamepad.axes[1] < -0.5 || gamepad.buttons[12].pressed));
+    let _Jump = keys[" "] || (gamepad && gamepad.buttons[0].pressed);
 
     playMusic(gameMusic);
 
@@ -302,6 +315,22 @@ function canvas_update() {
         player.y -= player.speed;
         currentRow = 2;
         player.isMoving = true;
+    }
+
+    if (_Jump && player.z === 0) {
+        player.vz = 10;
+        player.isJumping = true;
+    }
+
+    // gravidade
+    player.vz -= game.gravity;
+    player.z += player.vz;
+
+    // chão
+    if (player.z <= 0) {
+        player.z = 0;
+        player.vz = 0;
+        player.isJumping = false;
     }
 
     // Colisão limite do mapa
@@ -359,14 +388,13 @@ function canvas_update() {
     }
 
     // Colisão com os Carros
-    if (collisionCheckBetter(player, carro1)) {
+    if (player.z === 0 && collisionCheckBetter(player, carro1)) {
         game.state = "death";
     }
 
-    if (collisionCheckBetter(player, carro2)) {
+    if (player.z === 0 && collisionCheckBetter(player, carro2)) {
         game.state = "death";
     }
-
     // Sistema de Dificuldade
     let currentLevel = Math.floor(recycled / 5);
 
@@ -376,6 +404,13 @@ function canvas_update() {
         carro1.speed += 1;
         carro2.speed += 1;
     }
+
+    shadow.x = (player.x + player.z * 0.1) 
+    shadow.y = player.y + 35
+    shadow.width = 50 - player.z * 0.3;
+    shadow.height = 20 - player.z * 0.1;
+
+
 }
 
 // Desenha na tela
@@ -392,7 +427,6 @@ function canvas_draw() {
     
     // Desenha a Lixeira
     ctx.drawImage(bin_spr, bin.x, bin.y, bin.width, bin.height);
-
     
     // Desenha o Carro 1
     ctx.drawImage(
@@ -407,6 +441,21 @@ function canvas_draw() {
         carro1.height
     );
 
+    // Desenha a Sombra
+    ctx.save(); // guarda o estado atual
+    ctx.globalAlpha = 0.3; // transparência (ajusta aqui: 0.2, 0.25, 0.3...)
+
+    ctx.drawImage(
+        shadow_spr,
+        shadow.x,
+        shadow.y,
+        shadow.width,
+        shadow.height
+    );
+
+    ctx.restore(); // volta ao normal
+
+
     // Desenha o Player
     ctx.drawImage (
         player_spr,
@@ -415,7 +464,7 @@ function canvas_draw() {
         spriteWidth, 
         spriteHeight,             
         player.x, 
-        player.y,                    
+        player.y - player.z,                    
         player.width, 
         player.height
     );
