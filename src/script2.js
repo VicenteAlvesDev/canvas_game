@@ -1,13 +1,19 @@
 
-// Carrega recursos iniciais
+// =====================
+// SETUP
+// =====================
+
 const canvas = document.querySelector("#canvas");
 const ctx = canvas.getContext("2d");
 
 let recycled = parseInt(document.querySelector("#trash").innerHTML);
 let difficultyLevel = parseInt(document.querySelector("#difficult").innerHTML);
 
-// Sons em geral
-let currentMusic = null; // Música tocando atualmente
+// =====================
+// AUDIO
+// =====================
+
+let currentMusic = null;
 
 let startMusic = new Audio("../assets/sfx/music/music_start.mp3");
 startMusic.loop = true;
@@ -39,14 +45,10 @@ function playMusic(music) {
     }
 }
 
-let game = {
-    width: 800,
-    height: 600,
-    gravity: 0.5,
-    state : "start"
-};
+// =====================
+// INPUT
+// =====================
 
-// Teclas
 let keys = {}
 window.addEventListener("keydown", (event) => {
     keys[event.key.toLowerCase()] = true;
@@ -56,7 +58,11 @@ window.addEventListener("keyup", (event) => {
     keys[event.key.toLowerCase()] = false;
 });
 
-// Mapa 
+
+// =====================
+// MAPA
+// =====================
+
 let tileSize = 85.71428571428571;
 
 let map = [
@@ -97,21 +103,24 @@ function drawMap() {
   }
 }
 
-function collisionCheck(obj1, obj2) {
+// =====================
+// UTIL
+// =====================
+
+function collisionCheck(obj1, obj2, type = "normal") {
+    if (type === "better") {
+        return obj1.x + 10 < (obj2.x + 15) + obj2.width - 30 &&
+               (obj1.x + 10) + (obj1.width - 20) > obj2.x + 15 &&
+               obj1.y + 20 < (obj2.y + 30) + obj2.height - 70 &&
+               (obj1.y + 20) + (obj1.height - 20) > obj2.y + 30;
+    }
+
     return obj1.x < obj2.x + obj2.width &&
            obj1.x + obj1.width > obj2.x &&
            obj1.y < obj2.y + obj2.height &&
            obj1.y + obj1.height > obj2.y;
 }
 
-function collisionCheckBetter(obj1, obj2) {
-    return obj1.x + 10 < (obj2.x + 15) + obj2.width - 30 &&
-           (obj1.x + 10) + (obj1.width - 20) > obj2.x + 15 &&
-           obj1.y + 20 < (obj2.y + 30) + obj2.height - 70 &&
-           (obj1.y + 20) + (obj1.height - 20) > obj2.y + 30;
-}
-
-// Debug
 function drawHitbox(obj, color = "red") {
     if (obj == carro1 || obj == carro2) {
         ctx.strokeStyle = color;
@@ -129,6 +138,17 @@ function drawHitbox(obj, color = "red") {
     
 }
 
+// =====================
+// ENTIDADES
+// =====================
+
+let game = {
+    width: 800,
+    height: 600,
+    gravity: 0.5,
+    state : "start"
+};
+
 let player = {
     x: 350,
     y: 430,
@@ -139,17 +159,14 @@ let player = {
     speed: 4,
     isMoving: false,
     isJumping: false,
-    withTrash: false
+    withTrash: false,
+    currentFrame: 0, // Quadro atual da animação
+    currentRow: 5,
+    spriteWidth: 1280 / 4, // Largura de um frame da spritesheet
+    spriteHeight: 2560 / 8, // Altura do frame 
+    animCounter: 0 // Tempo da Animação
+
 };
-
-let player_spr = new Image();
-player_spr.src = "../assets/spr/spr_player.png";
-
-let currentFrame = 0; // Quadro atual da animação
-let currentRow = 5;
-let spriteWidth = 1280 / 4; // Largura de um frame da spritesheet
-let spriteHeight = 2560 / 8; // Altura do frame 
-let animCounter = 0; // Tempo da Animação
 
 let shadow = {
     x: 350,
@@ -158,18 +175,12 @@ let shadow = {
     height: 20,
 };
 
-let shadow_spr = new Image();
-shadow_spr.src = "../assets/spr/spr_shadow.png";
-
 let trash = {
     x: Math.random() * (game.width - 50),
     y: Math.random() * (game.height - 50),
     width: 50,
     height: 50,
 }
-
-let trash_spr = new Image();
-trash_spr.src = "../assets/spr/spr_trash.png";
 
 let bin  = {
     x: 40,
@@ -178,22 +189,18 @@ let bin  = {
     height: 80,
 }
 
-let bin_spr = new Image();
-bin_spr.src = "../assets/spr/spr_bin.png";
-
 let carro1 = {
     x: -200,
     y: 160,
     width: 94 * 1.5, 
     height: 87 * 1.5, 
     speed: 3,
+    currentFrame: 0, // Quadro atual da animação
+    currentRow: 2,
+    spriteWidth: 376 / 4, // Largura de um frame da spritesheet
+    spriteHeight: 348 / 4, // Altura do frame (supondo uma linha só)
+    animCounterCarro: 0, // Tempo da Animação
 };
-
-let carro_spr = new Image();
-carro_spr.src = "../assets/spr/spr_truck_white.png";
-
-let carro1_currentFrame = 0; // Quadro atual da animação
-let carro1_currentRow = 2;
 
 let carro2 = {
     x: 800,
@@ -201,19 +208,108 @@ let carro2 = {
     width: 94 * 1.5,
     height: 87 * 1.5,
     speed: 3,
+    currentFrame: 0, // Quadro atual da animação
+    currentRow: 1,
+    spriteWidth: 376 / 4, // Largura de um frame da spritesheet
+    spriteHeight: 348 / 4, // Altura do frame (supondo uma linha só)
+    animCounterCarro: 0, // Tempo da Animação
 };
+
+// =====================
+// SPRITES / ANIMAÇÃO
+// =====================
+
+let player_spr = new Image();
+player_spr.src = "../assets/spr/spr_player.png";
+
+let shadow_spr = new Image();
+shadow_spr.src = "../assets/spr/spr_shadow.png";
+
+let trash_spr = new Image();
+trash_spr.src = "../assets/spr/spr_trash.png";
+
+let bin_spr = new Image();
+bin_spr.src = "../assets/spr/spr_bin.png";
+
+let carro_spr = new Image();
+carro_spr.src = "../assets/spr/spr_truck_white.png";
 
 let carro2_spr = new Image();
 carro2_spr.src = "../assets/spr/spr_truck_black.png";
 
-let carro2_currentFrame = 0; // Quadro atual da animação
-let carro2_currentRow = 1;
+// =====================
+// DRAW (RENDER)
+// =====================
 
-let carro_spriteWidth = 376 / 4; // Largura de um frame da spritesheet
-let carro_spriteHeight = 348 / 4; // Altura do frame (supondo uma linha só)
-let animCounterCarro = 0; // Tempo da Animação
+function drawPlayer() {
+    ctx.drawImage (
+        player_spr,
+        player.currentFrame * player.spriteWidth,            
+        player.currentRow * player.spriteHeight,
+        player.spriteWidth, 
+        player.spriteHeight,             
+        player.x, 
+        player.y - player.z,                    
+        player.width, 
+        player.height
+    );
+}
 
-// Tela de Start
+function drawShadow() {
+    ctx.save(); // guarda o estado atual
+    ctx.globalAlpha = 0.3; // transparência (ajusta aqui: 0.2, 0.25, 0.3...)
+
+    ctx.drawImage(
+        shadow_spr,
+        shadow.x,
+        shadow.y,
+        shadow.width,
+        shadow.height
+    );
+
+    ctx.restore(); // volta ao normal
+}
+
+function drawTrash() {
+    ctx.drawImage(trash_spr, trash.x, trash.y, trash.width, trash.height);
+}
+
+function drawBin() {
+    ctx.drawImage(bin_spr, bin.x, bin.y, bin.width, bin.height);
+}
+
+function drawCar() {
+    ctx.drawImage(
+        carro_spr,
+        carro1.currentFrame * carro1.spriteWidth,
+        carro1.currentRow * carro1.spriteHeight,
+        carro1.spriteWidth, 
+        carro1.spriteHeight,
+        carro1.x, 
+        carro1.y,
+        carro1.width, 
+        carro1.height
+    );
+}
+
+function drawCar2() {
+    ctx.drawImage(
+        carro2_spr,
+        carro2.currentFrame * carro2.spriteWidth,
+        carro2.currentRow * carro2.spriteHeight,
+        carro2.spriteWidth,
+        carro2.spriteHeight,
+        carro2.x, 
+        carro2.y,
+        carro2.width, 
+        carro2.height
+    );
+}
+
+// =====================
+// GAME STATES
+// =====================
+
 function start_loop() {
 
     let gamepad = navigator.getGamepads()[0];
@@ -268,52 +364,52 @@ function canvas_update() {
     if (_Right && _Up) {
         player.x += player.speed;
         player.y -= player.speed;
-        currentRow = 4;
+        player.currentRow = 4;
         player.isMoving = true;
     }
 
     else if (_Right && _Down) {
         player.x += player.speed;
         player.y += player.speed;
-        currentRow = 7;
+        player.currentRow = 7;
         player.isMoving = true;
     }
 
     else if (_Left && _Up) {
         player.x -= player.speed;
         player.y -= player.speed;
-        currentRow = 3;
+        player.currentRow = 3;
         player.isMoving = true;
     }
 
     else if (_Left && _Down) {
         player.x -= player.speed;
         player.y += player.speed;
-        currentRow = 6;
+        player.currentRow = 6;
         player.isMoving = true;
     }
 
     else if (_Right) {
         player.x += player.speed;
-        currentRow = 1;
+        player.currentRow = 1;
         player.isMoving = true;
     }
 
     else if (_Left) {
         player.x -= player.speed;
-        currentRow = 0;
+        player.currentRow = 0;
         player.isMoving = true;
     }
 
     else if (_Down) {
         player.y += player.speed;
-        currentRow = 5;
+        player.currentRow = 5;
         player.isMoving = true;
     }
 
     else if (_Up) {
         player.y -= player.speed;
-        currentRow = 2;
+        player.currentRow = 2;
         player.isMoving = true;
     }
 
@@ -388,11 +484,11 @@ function canvas_update() {
     }
 
     // Colisão com os Carros
-    if (player.z === 0 && collisionCheckBetter(player, carro1)) {
+    if (player.z === 0 && collisionCheck(player, carro1, "better")) {
         game.state = "death";
     }
 
-    if (player.z === 0 && collisionCheckBetter(player, carro2)) {
+    if (player.z === 0 && collisionCheck(player, carro2, "better")) {
         game.state = "death";
     }
     // Sistema de Dificuldade
@@ -410,7 +506,6 @@ function canvas_update() {
     shadow.width = 50 - player.z * 0.3;
     shadow.height = 20 - player.z * 0.1;
 
-
 }
 
 // Desenha na tela
@@ -422,105 +517,31 @@ function canvas_draw() {
     // Desenha o Mapa
     drawMap();
 
-    // Desenha o Lixo
-    function drawTrash() {
-        ctx.drawImage(trash_spr, trash.x, trash.y, trash.width, trash.height);
-    }
-    
-    
-    // Desenha a Lixeira
-    function drawBin() {
-        ctx.drawImage(bin_spr, bin.x, bin.y, bin.width, bin.height);
-    }
-
-    // Desenha o Carro 1
-    function drawCar() {
-        
-        ctx.drawImage(
-            carro_spr,
-            carro1_currentFrame * carro_spriteWidth,
-            carro1_currentRow * carro_spriteHeight,
-            carro_spriteWidth, 
-            carro_spriteHeight,
-            carro1.x, 
-            carro1.y,
-            carro1.width, 
-            carro1.height
-        );
-    }
-
-    // Desenha a Sombra
-    function drawShadow() {
-        ctx.save(); // guarda o estado atual
-        ctx.globalAlpha = 0.3; // transparência (ajusta aqui: 0.2, 0.25, 0.3...)
-
-        ctx.drawImage(
-            shadow_spr,
-            shadow.x,
-            shadow.y,
-            shadow.width,
-            shadow.height
-        );
-
-        ctx.restore(); // volta ao normal
-    }
-
-    // Desenha o Player
-    function drawPlayer() {
-        ctx.drawImage (
-            player_spr,
-            currentFrame * spriteWidth,            
-            currentRow * spriteHeight,
-            spriteWidth, 
-            spriteHeight,             
-            player.x, 
-            player.y - player.z,                    
-            player.width, 
-            player.height
-        );
-    }
-
     // Animação
     if (player.isMoving) {
-        animCounter++;
+        player.animCounter++;
 
-        if (animCounter >= 10) {
-            animCounter = 0;
-            currentFrame++;
-            if (currentFrame > 3) {
-                currentFrame = 0;
+        if (player.animCounter >= 10) {
+            player.animCounter = 0;
+            player.currentFrame++;
+            if (player.currentFrame > 3) {
+                player.currentFrame = 0;
             }
         }
     } else {
-        currentFrame = 0;
-        animCounter = 0;
-    }
-
-    function drawCar2() {
-
-        // Desenha o Carro 2
-        ctx.drawImage(
-            carro2_spr,
-            carro2_currentFrame * carro_spriteWidth,
-            carro2_currentRow * carro_spriteHeight,
-            carro_spriteWidth,
-            carro_spriteHeight,
-            carro2.x, 
-            carro2.y,
-            carro2.width, 
-            carro2.height
-        );
+        player.currentFrame = 0;
+        player.animCounter = 0;
     }
 
     // Animação Carro
-    animCounterCarro++
-    if (animCounterCarro >= 10) {
-        animCounterCarro = 0
-        carro1_currentFrame++;
-        carro2_currentFrame++;
-        if (carro1_currentFrame > 3) {
-            carro1_currentFrame = 0;
-            carro2_currentFrame = 0;
+    carro1.animCounterCarro++
+    if (carro1.animCounterCarro >= 10) {
+        carro1.animCounterCarro = 0
+        carro1.currentFrame++;
+        carro2.currentFrame++;
+        if (carro1.currentFrame > 3) {
+            carro1.currentFrame = 0;
+            carro2.currentFrame = 0;
         }
     }
 
@@ -564,13 +585,13 @@ function canvas_draw() {
 
     }
 
-    // Debug
-    // drawHitbox(player, "lime");   // player verde
-    // drawHitbox(carro1, "red");    // carro 1 vermelho
-    // drawHitbox(carro2, "red");    // carro 2 vermelho
-    // drawHitbox(trash, "yellow");   
-    // drawHitbox(bin, "pink");   
-
+    /* Debug
+    drawHitbox(player, "lime");   // player verde
+    drawHitbox(carro1, "red");    // carro 1 vermelho
+    drawHitbox(carro2, "red");    // carro 2 vermelho
+    drawHitbox(trash, "yellow");   
+    drawHitbox(bin, "pink");   
+    */
 };
 
 function end_loop() {
@@ -628,7 +649,7 @@ function end_loop() {
         carro1.speed = 3;
         carro2.speed = 3;
 
-        currentRow = 5;
+        player.currentRow = 5;
 
         game.state = "gameplay";
     }
@@ -654,14 +675,17 @@ function end_loop() {
         carro1.speed = 3;
         carro2.speed = 3;
 
-        currentRow = 5;
+        player.currentRow = 5;
 
         game.state = "start";
         playMusic(startMusic);
     }
 }
 
-// Loop Principal
+// =====================
+// LOOP
+// =====================
+
 function game_loop() {
     if (game.state == "start") {
         start_loop();
