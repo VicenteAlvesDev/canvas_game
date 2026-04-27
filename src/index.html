@@ -1,28 +1,94 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Arquivos Externos -->
     <link rel="stylesheet" href="./style.css">
-    <script src="./script2.js" defer></script>
+    <script src="./script.js" defer></script>
 
-    <title> Ecological Quest </title>
+    <title> Coletor Cidadão </title>
 </head>
 <body>
-    <h1> Ecological Quest </h1>
+    <div id="loading-screen">
+        <h2 id="loading-title"> Carregando Recursos... </h2>
+
+        <div id="loading-bar-container">
+            <div id="loading-bar"></div>
+        </div>
+
+        <p id="loading-status"> Inicializando... </p>
+    </div> <!-- Tela de Loading -->
+
+    <div class="modal" id="nameModal">
+        <div class="content">
+            <h2> Digite seu nome </h2>
+
+            <input type="text" id="playerNameInput" placeholder="Seu nome aqui..." maxlength="15">
+
+            <button id="confirmNameBtn"> Confirmar </button>
+        </div>
+    </div>
+
     <main>
-        <canvas id="canvas" width="800" height="600"></canvas>
+        <div class="banner"></div> <!-- Banner -->
+
+        <div class="game-container">
+             <canvas id="canvas" width="800" height="600"></canvas>
+        </div> <!-- Game-Container -->
+
+        <div class="tables">
+            <h2> | </h2>
+            <h2> Reciclados: <span id="trash"> 0 </span> </h2>
+            <h2> | </h2>
+            <h2> | </h2>
+            <h2> Dificuldade: <span id="difficult"> 0 </span> </h2>
+            <h2> | </h2>
+        </div> <!-- Tables -->
+
+        <div class="history">
+            <h2> História </h2>
+            <p> Em uma pequena cidade marcada pelo descuido com o espaço público, ruas acumulavam lixo e a população já não acreditava que mudanças fossem possíveis. Foi nesse cenário que surgiu o Coletor Cidadão, não apenas como um jogo, mas como uma nova forma de enxergar a realidade. </p> 
+            <p> No jogo, o jogador assume o papel de um cidadão comum que decide agir. A cada passo pelas ruas virtuais, ele coleta resíduos espalhados, desvia de obstáculos e enfrenta desafios que representam problemas reais das cidades. Conforme avança, o ambiente se transforma: ruas antes poluídas começam a ficar limpas, e a sensação de progresso se torna visível. </p>
+            <p> Mas o verdadeiro objetivo vai além da pontuação. A experiência foi pensada para provocar reflexão. Cada ação dentro do jogo simboliza uma escolha no mundo real — cuidar ou ignorar, participar ou se omitir. A dificuldade crescente representa os desafios de manter uma cidade organizada quando poucos colaboram. </p>
+        </div> <!-- History -->
+
+        <div class="controls">
+            <h3> Controles </h3>
+
+            <div class="controls-wrapper">
+                <div class="control-group">
+                    <h4> Teclado </h4>
+                    <ul>
+                        <li> <span> W / ↑ </span> <p> Cima </p> </li>
+                        <li> <span> S / ↓ </span> <p> Baixo </p> </li>
+                        <li> <span> A / ← </span> <p> Esquerda </p> </li>
+                        <li> <span> D / → </span> <p> Direita </p> </li>
+                        <li> <span> Espaço </span> <p> Pular </p></li>
+                        <li> <span> Q </span> <p> Dash </p></li>
+                        <li> <span> Enter </span> <p> Start / Confirmar </p></li>
+                        <li> <span> R </span> <p> Reiniciar (Game Over) </p></li>
+                        <li> <span> T </span> <p> Menu (Game Over) </p></li>
+                    </ul>
+                </div> <!-- Control-Group -->
+
+                <div class="control-group">
+                    <h4> Gamepad </h4>
+                    <ul>
+                        <li> <span> Analógico / Dpad </span> <p> Movimento </p> </li>
+                        <li> <span> A / X </span> <p> Pular </p> </li>
+                        <li> <span> RT / R2 </span> <p> Dash </p> </li>
+                        <li> <span> A / X </span> <p> Reiniciar (Game Over) </p> </li>
+                        <li> <span> B / ◯ </span> <p> Menu (Game Over) </p> </li>
+                    </ul>
+                </div> <!-- Control-Group -->
+            </div> <!-- Control-Wrapper-->
+        </div> <!-- Controls -->
     </main>
 
-    <div class="tables">
-        <h2> | </h2>
-        <h2> Reciclados: <span id="trash"> 0 </span> </h2>
-        <h2> | </h2>
-        <h2> | </h2>
-        <h2> Dificuldade: <span id="difficult"> 0 </span> </h2>
-        <h2> | </h2>
-    </div>
+    <footer>
+        <p> © 2026 Coletor Cidadão. Todos os direitos reservados. </p>
+    </footer>
 </body>
 </html>

@@ -1,105 +1,114 @@
 
-
-UPDATE LOG – Ecological Quest Reimagined 
-Versão: 2.0
+UPDATE LOG – Coletor Cidadão
+Versão 3.0 - Dashing Forward
 
 [ SISTEMA GERAL ]
 
-- Reestruturação completa do loop do jogo
-- Antes: funções separadas (move + draw)
-- Agora: game_loop() com estados (start, gameplay, death)
-- Código mais organizado e escalável
+- Tela de Carregamento: Adicionada tela de loading com barra de progresso animada.
+- Modal de Nome: Novo modal para o jogador inserir seu nome, exibido acima do personagem.
+- Estados do Jogo: Adicionado estado "loading" e melhoria na organização geral.
+- Remoção de Bugs: Prevenção da rolagem da página ao usar teclas de controle.
+- Versão atualizada para v3.0.
 
-[ MAPA ]
+[ SISTEMA DE TELAS ]
 
-- Substituição de fillRect por sistema de tiles
-- Uso de matriz (map[][])
-- Adição de sprites para o cenário
-- Visual mais detalhado
+- Tela Inicial (Start):
+  - Reformulada completamente.
+  - Menu com opções (INICIAR, PERSONALIZAÇÃO).
+  - Sistema de fundo com parallax (Sky, Far, Mid, Front).
+  - Melhorias visuais com gradientes e efeitos.
+
+- Tela de Morte (Death):
+  - Mantida e integrada ao novo sistema de estados.
+
+[ ARTE E VISUAIS ]
+
+- Fundo do Site: Imagem "spr_siteBG.png" com overlay semitransparente.
+- Banner: Adicionado "spr_banner.png" acima do jogo.
+- Seção História: Texto explicativo sobre o jogo.
+- Seção Controles: Lista detalhada de comandos.
+- Nome do Jogador: Implementação de drawName().
+- Sistema de Dicas:
+  - Frases ambientais ao reciclar.
+  - Efeito de shake na tela.
+  - Fade-out e acompanhamento do personagem.
 
 [ ÁUDIO ]
 
-- Sistema de áudio reformulado
-- Separação de músicas:
-  * startMusic
-  * gameMusic
-  * endMusic
+- Novo efeito sonoro: sfxDash.mp3 para o dash.
 
-- Adição de efeitos sonoros (SFX)
-- Preparado para controle de música atual
+[ JOGABILIDADE ]
+
+- Habilidade de Dash:
+  - Tecla Q (teclado) ou RT/R2 (gamepad).
+  - Movimento rápido na direção atual.
+  - Cooldown de 30 frames.
+
+- Movimentação do Player aprimorada.
+- Dicas aparecem a cada 5 reciclagens.
+
+[ MAPA E BACKGROUND ]
+
+- Sistema de Paralaxe com bgOffset.
+- Novas imagens: bg_sky, bg_far, bg_mid, bg_front.
+- Função drawLayer() para renderização.
+
+[ INTERFACE DO JOGO (UI/UX) ]
+
+- Layout HTML:
+  - Estrutura com game-container, history e controls.
+  - Rodapé com direitos autorais.
+
+- Estilização:
+  - Design moderno com fundo escuro transparente.
+  - Bordas arredondadas e sombras.
+  - Cor principal: #38bdf8.
+
+- Novos elementos HTML:
+  - #loading-screen, .modal, .control-group, etc.
+
+[ SISTEMA DE DIFICULDADE ]
+
+- Progressão mantida (velocidade aumenta a cada 5 reciclagens).
+- Indicadores visíveis e funcionais.
+
+[ CÓDIGO E ARQUITETURA ]
+
+- Modularização:
+  - loading_loop, start_loop, canvas_update, canvas_draw, end_loop.
+
+- Utilitário:
+  - Função approach() para animações suaves.
+
+- Organização:
+  - Variáveis agrupadas (game, menu, bgOffset, tips).
+
+- Código mais limpo e preparado para expansão.
 
 [ CONTROLES ]
 
-- Sistema de input dinâmico (keys[event.key])
-- Suporte a controle (Gamepad API)
-- Mais flexível e expansível
+- Novo mapeamento:
+  - Q / RT → Dash
+  - A/X → Reiniciar
+  - B/◯ → Menu
 
-[ PLAYER ]
+- Teclas não afetam mais a rolagem da página.
 
-- Movimento com diagonais
-- Animação melhorada com contador (animCounter)
-- Simplificação do sistema de sprite
-- Remoção de variáveis desnecessárias
+[ CORREÇÕES E MELHORIAS ]
 
-[ CARROS ]
+- Modal não interfere mais no menu.
+- Colisões ajustadas (player.z === 0).
+- Melhor uso de requestAnimationFrame.
+- Renderização otimizada (drawTips, drawName).
 
-- Movimento mais fluido
-- Sistema de troca de cor melhorado
-- Animação baseada em contador
-- Velocidade aumenta com dificuldade
+----------------------------------------
 
-[ COLISÃO ]
+RESUMO GERAL:
 
-- Mantido collisionCheck()
-- Adicionado collisionCheckBetter()
-- Hitboxes mais precisas
-- Melhor experiência de gameplay
-
-[ DEBUG ]
-
-- Nova função drawHitbox()
-- Visualização de colisões
-- Ajustes específicos por tipo de objeto
-
-[ GAMEPLAY ]
-
-- Tamanho do lixo aleatório
-- Sistema de progressão por pontuação
-- Dificuldade aumenta a cada 5 pontos
-
-[ TELAS ]
-
-- Nova tela inicial com gradiente e fonte estilizada
-- Nova tela de morte com opções:
-  * Reiniciar
-  * Voltar ao menu
-
-- Suporte a controle nas telas
-
-[ ESTADOS DO JOGO ]
-
-- Antes: start, game, end
-- Agora: start, gameplay, death
-- Mais organizado e semântico
-
-[ OTIMIZAÇÃO ]
-
-- Remoção de setInterval
-- Uso exclusivo de requestAnimationFrame
-- Código mais leve e eficiente
-
-[ ARQUITETURA ]
-
-- Separação de responsabilidades:
-  - canvas_update() → lógica
-  - canvas_draw() → render
-
-- Código mais modular
-
-[ RESUMO ]
-
-- Grande refatoração do projeto
-- Melhor organização
-- Melhor visual
-- Melhor jogabilidade
-- Base pronta para futuras melhorias
+Grande atualização do projeto para "Coletor Cidadão" (v3.0).
+Evolução de uma demo para uma experiência completa, com:
+- Sistema de telas mais profissional
+- Personalização (nome do jogador)
+- Nova mecânica (dash)
+- Conteúdo educativo
+- Melhorias visuais significativas
